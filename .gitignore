@@ -29,3 +29,9 @@ hs_err_pid*
 producer/target
 
 consumer/target
+
+consumer/.settings
+
+producer/.settings
+
+producer/.project
