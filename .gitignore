@@ -33,3 +33,7 @@ consumer/target
 consumer/.settings
 
 producer/.settings
+
+consumer/.factorypath
+
+producer/.factorypath

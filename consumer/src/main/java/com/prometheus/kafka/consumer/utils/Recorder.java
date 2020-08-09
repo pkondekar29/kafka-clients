@@ -1,9 +1,9 @@
 package com.prometheus.kafka.consumer.utils;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.LongAdder;
 
-public class Recorder extends ConcurrentHashMap<Long, Integer> {
+public class Recorder extends ConcurrentHashMap<Long, LongAdder> {
 
     /**
      *

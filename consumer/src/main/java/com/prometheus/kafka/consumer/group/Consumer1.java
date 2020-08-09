@@ -1,69 +1,89 @@
 package com.prometheus.kafka.consumer.group;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.prometheus.processor.impl.StringConsumerRecordProcessor;
+import com.prometheus.processor.impl.UserConsumerRecordProcessor;
 import com.prometheus.kafka.consumer.utils.Recorder;
+import com.prometheus.kafka.deserializer.UserDeserializer;
+import com.prometheus.kafka.model.User;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.connect.json.JsonDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Consumer1 {
 
-    public static void main(String[] args) {
+    private static final Logger LOG = LoggerFactory.getLogger(Consumer1.class);
+
+    private static final String PROPS_FILE_NAME = "consumer-1.properties";
+
+    public static void main(String[] args) throws IOException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9093, localhost:9094, localhost:9095");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("group.id", "test-group");
+        InputStream propsInputStream = new Consumer1().getClass().getClassLoader().getResourceAsStream(PROPS_FILE_NAME);
+        try {
+            props.load(propsInputStream);
+        } catch (IOException e) {
+            LOG.error("Could not read consumer properties", e);
+            throw e;
+        }
         // https://kafka.apache.org/documentation.html#consumerconfigs
 
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-
+        KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
+        
         // Here we are subscibing to the topic
         consumer.subscribe(Arrays.asList("bigTopic"));
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
+            final Consumer<ConsumerRecord<String, User>> processor = new UserConsumerRecordProcessor()
+                    .andThen(record -> System.out.println("Processed successfully: " + record.key()));
+
             while (true) {
                 // Poll loop is started
-                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10));
+                ConsumerRecords<String, User> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 consumerRecords.forEach(record -> {
-                    System.out.println(String.format("Count: %s, Topic: %s, Partition: %s, Offset: %s, Value: %s",
-                            Integer.toString(i.incrementAndGet()), record.topic(), record.partition(), record.offset(),
-                            record.value().toUpperCase()));
-                    if(recorder.containsKey(record.offset())) {
-                        recorder.put(record.offset(), recorder.get(record.offset()) + 1);
-                    } else {
-                        recorder.put(record.offset(), 1);
+                    System.out.println("inside");
+                    LOG.error("logger: inside");
+                    // Process the record
+                    processor.accept(record);
+
+                    // Keep a count for monitoring
+                    recorder.computeIfAbsent(record.offset(), offset -> new LongAdder()).increment();
+                    if (recorder.get(record.offset()).longValue() > 1L) {
+                        LOG.info("Duplicate processing: " + record.offset());
                     }
+
+                    // Increment the count of records processed by this consumer
+                    LOG.info("Count: " + i.incrementAndGet());
                 });
+                // consumer.commitSync();
                 consumer.commitAsync((offsets, exception) -> {
-                    String dupString = 
-                        recorder.entrySet().stream()
-                            .filter(entry -> {
-                                return entry.getValue().intValue() > 1;
-                            })
-                            .map(Entry::getKey)
-                            .map(offset -> Long.toString(offset))
-                            .collect(Collectors.joining(","));
-                    if(dupString.length() > 1) {
-                        System.out.println(String.format("Number of offsets: %s, Commited Offsets: %s, Duplicated messages: [%s]",
-                            Integer.toString(offsets.size()),
-                            offsets.entrySet().stream()
-                                .map(Entry::getValue)
-                                .map(OffsetAndMetadata::offset)
-                                .map(offset -> Long.toString(offset))
-                                .collect(Collectors.joining(", ")),
-                            dupString));
+                    if (offsets.size() > 0) {
+                        LOG.info(String.format("Number of offsets: %s, Commited Offsets: %s",
+                                Integer.toString(offsets.size()),
+                                offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
+                                        .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
                     }
                 });
             }
+        } catch (Exception e) {
+            LOG.error("Unexpected error", e);
         } finally {
             consumer.close();
         }
