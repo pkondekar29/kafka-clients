@@ -41,7 +41,7 @@ public class Consumer1 {
         // https://kafka.apache.org/documentation.html#consumerconfigs
 
         KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
-        
+
         // Here we are subscibing to the topic
         consumer.subscribe(Collections.singletonList("user"));
         try {
@@ -55,27 +55,23 @@ public class Consumer1 {
                 ConsumerRecords<String, User> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 consumerRecords.forEach(record -> {
                     // Process the record
-                    CompletableFuture.runAsync(() -> processor.accept(record))
-                        .thenRun(() -> {
-                            // consumer.commitSync();
-                            consumer.commitAsync((offsets, exception) -> {
-                                if (offsets.size() > 0) {
-                                    LOG.info(String.format("Number of offsets: %s, Commited Offsets: %s",
-                                            Integer.toString(offsets.size()),
-                                            offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
-                                                    .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
-                                }
-                            });
-                        })
-                        .thenRun(() -> {
-                            // Keep a count for monitoring
-                            recorder.computeIfAbsent(record.offset(), offset -> new LongAdder()).increment();
-                            if (recorder.get(record.offset()).longValue() > 1L) {
-                                LOG.info("Duplicate processing: " + record.offset());
-                            }
-                            // Increment the count of records processed by this consumer
-                            LOG.info("Count: " + i.incrementAndGet());
-                        });
+                    CompletableFuture.runAsync(() -> processor.accept(record)).thenRun(() -> {
+                        // Keep a count for monitoring
+                        recorder.computeIfAbsent(record.offset(), offset -> new LongAdder()).increment();
+                        if (recorder.get(record.offset()).longValue() > 1L) {
+                            LOG.info("Duplicate processing: " + record.offset());
+                        }
+                        // Increment the count of records processed by this consumer
+                        LOG.info("Count: " + i.incrementAndGet());
+                    });
+                });
+
+                consumer.commitAsync((offsets, exception) -> {
+                    if (offsets.size() > 0) {
+                        LOG.info(String.format("Commited Offsets: %s",
+                                offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
+                                        .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
+                    }
                 });
             }
         } catch (Exception e) {

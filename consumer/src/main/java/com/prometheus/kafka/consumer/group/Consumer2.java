@@ -3,16 +3,19 @@ package com.prometheus.kafka.consumer.group;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.prometheus.kafka.consumer.utils.Recorder;
+import com.prometheus.kafka.model.User;
 import com.prometheus.processor.impl.StringConsumerRecordProcessor;
+import com.prometheus.processor.impl.UserConsumerRecordProcessor;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -38,37 +41,35 @@ public class Consumer2 {
         }
         // https://kafka.apache.org/documentation.html#consumerconfigs
 
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
 
         // Here we are subscibing to the topic
-        consumer.subscribe(Arrays.asList("bigTopic"));
+        consumer.subscribe(Collections.singletonList("user"));
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
-            final Consumer<ConsumerRecord<String, String>> processor = new StringConsumerRecordProcessor()
-                    .andThen(record -> System.out.println("Processed successfully"));
+            final Consumer<ConsumerRecord<String, User>> processor = new UserConsumerRecordProcessor()
+                    .andThen(record -> System.out.println("Processed successfully: " + record.key()));
 
             while (true) {
                 // Poll loop is started
-                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, User> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 consumerRecords.forEach(record -> {
                     // Process the record
-                    processor.accept(record);
-
-                    // Keep a count for monitoring
-                    recorder.computeIfAbsent(record.offset(), offset -> new LongAdder()).increment();
-                    if (recorder.get(record.offset()).longValue() > 1L) {
-                        LOG.info("Duplicate processing: " + record.offset());
-                    }
-
-                    // Increment the count of records processed by this consumer
-                    LOG.info("Count: " + i.incrementAndGet());
+                    CompletableFuture.runAsync(() -> processor.accept(record)).thenRun(() -> {
+                        // Keep a count for monitoring
+                        recorder.computeIfAbsent(record.offset(), offset -> new LongAdder()).increment();
+                        if (recorder.get(record.offset()).longValue() > 1L) {
+                            LOG.info("Duplicate processing: " + record.offset());
+                        }
+                        // Increment the count of records processed by this consumer
+                        LOG.info("Count: " + i.incrementAndGet());
+                    });
                 });
-                // consumer.commitSync();
+
                 consumer.commitAsync((offsets, exception) -> {
                     if (offsets.size() > 0) {
-                        LOG.info(String.format("Number of offsets: %s, Commited Offsets: %s",
-                                Integer.toString(offsets.size()),
+                        LOG.info(String.format("Commited Offsets: %s",
                                 offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
                                         .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
                     }

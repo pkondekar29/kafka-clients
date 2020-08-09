@@ -13,13 +13,12 @@ public class UserDeserializer implements Deserializer<User> {
 
     @Override
     public User deserialize(String topic, byte[] data) {
-        LOG.error("deserializing");
         ObjectMapper mapper = new ObjectMapper();
         User user = null;
         try {
             user = mapper.readValue(data, User.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Unexpected error", e);
         }
         return user;
     }
