@@ -1,4 +1,4 @@
-package com.prometheus.serializer;
+package com.prometheus.kafka.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prometheus.model.User;

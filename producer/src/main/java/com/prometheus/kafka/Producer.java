@@ -6,11 +6,9 @@ import java.util.Properties;
 import java.util.UUID;
 
 import com.prometheus.model.User;
-import com.prometheus.serializer.UserSerializer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +43,9 @@ public final class Producer {
             for (int i = 0; i < 10; i++) {
                 User user = User.builder().userId("Id-" + i).name("Name-" + i).build();
                 String uuid = UUID.randomUUID().toString();
-                ProducerRecord<String, User> producerRecord = new ProducerRecord<>("bigTopic", user);
-                // LOG.info("Producing record: " + user.toString());
+                ProducerRecord<String, User> producerRecord = new ProducerRecord<>("user", uuid, user);
                 producer.send(producerRecord);
-                System.out.println(String.format("Producing record: %s, User: %s", uuid, user.toString()));
+                LOG.info(String.format("Produced record: %s, User: %s", uuid, user.toString()));
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);

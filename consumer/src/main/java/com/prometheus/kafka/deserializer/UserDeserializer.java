@@ -3,7 +3,6 @@ package com.prometheus.kafka.deserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prometheus.kafka.model.User;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ public class UserDeserializer implements Deserializer<User> {
 
     @Override
     public User deserialize(String topic, byte[] data) {
+        LOG.error("deserializing");
         ObjectMapper mapper = new ObjectMapper();
         User user = null;
         try {
