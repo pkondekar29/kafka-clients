@@ -1,11 +1,10 @@
 package com.prometheus.processor.impl;
 
 import com.prometheus.kafka.model.User;
-import com.prometheus.processor.api.ConsumerRecordProcessor;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class UserConsumerRecordProcessor implements ConsumerRecordProcessor<String, User> {
+public class UserConsumerRecordProcessor extends AbstractConsumerRecordProcessor<String, User> {
 
     @Override
     public void accept(ConsumerRecord<String, User> record) {

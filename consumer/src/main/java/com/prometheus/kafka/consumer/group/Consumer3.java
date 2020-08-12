@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import com.prometheus.kafka.consumer.utils.Recorder;
 import com.prometheus.kafka.model.User;
+import com.prometheus.processor.impl.AbstractConsumerRecordProcessor;
 import com.prometheus.processor.impl.UserConsumerRecordProcessor;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -47,8 +48,7 @@ public class Consumer3 {
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
-            final Consumer<ConsumerRecord<String, User>> processor = new UserConsumerRecordProcessor()
-                    .andThen(record -> System.out.println("Processed successfully: " + record.key()));
+            final AbstractConsumerRecordProcessor<String, User> processor = new UserConsumerRecordProcessor();
 
             while (true) {
                 // Poll loop is started
