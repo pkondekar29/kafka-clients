@@ -44,7 +44,7 @@ public class Consumer3 {
         KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
 
         // Here we are subscibing to the topic
-        consumer.subscribe(Collections.singletonList("user"));
+        consumer.subscribe(Collections.singletonList("users"));
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
@@ -67,11 +67,11 @@ public class Consumer3 {
                 });
 
                 consumer.commitAsync((offsets, exception) -> {
-                    if (offsets.size() > 0) {
-                        LOG.info(String.format("Commited Offsets: %s",
-                                offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
-                                        .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
-                    }
+                    // if (offsets.size() > 0) {
+                    //     LOG.info(String.format("Commited Offsets: %s",
+                    //             offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
+                    //                     .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
+                    // }
                 });
             }
         } catch (Exception e) {

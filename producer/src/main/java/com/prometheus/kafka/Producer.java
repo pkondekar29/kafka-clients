@@ -3,6 +3,7 @@ package com.prometheus.kafka;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 
 import com.prometheus.model.User;
@@ -23,7 +24,7 @@ public final class Producer {
 
     /**
      * Says hello to the world.
-     * 
+     *
      * @param args The arguments of the program.
      * @throws IOException
      */
@@ -40,10 +41,11 @@ public final class Producer {
         KafkaProducer<String, User> producer = new KafkaProducer<>(props);
 
         try {
-            for (int i = 0; i < 10; i++) {
-                User user = User.builder().userId("Id-" + i).name("Name-" + i).build();
+            Random rand = new Random();
+            for (int i = 0; i < 300; i++) {
+                User user = User.builder().userId("" + rand.nextInt(10000)).name("Name-" + i).build();
                 String uuid = UUID.randomUUID().toString();
-                ProducerRecord<String, User> producerRecord = new ProducerRecord<>("user", uuid, user);
+                ProducerRecord<String, User> producerRecord = new ProducerRecord<>("users", uuid, user);
                 producer.send(producerRecord);
                 LOG.info(String.format("Produced record: %s, User: %s", uuid, user.toString()));
             }

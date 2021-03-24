@@ -45,7 +45,7 @@ public class Consumer1 {
         KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
 
         // Here we are subscibing to the topic
-        consumer.subscribe(Collections.singletonList("user"));
+        consumer.subscribe(Collections.singletonList("users"));
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
@@ -53,12 +53,12 @@ public class Consumer1 {
             while (true) {
                 // Poll loop is started
                 ConsumerRecords<String, User> consumerRecords = consumer.poll(Duration.ofMillis(100));
-                
+
                 // Convert Collection from Iterable
-                final List<ConsumerRecord<String, User>> consumerRecordCollection = 
+                final List<ConsumerRecord<String, User>> consumerRecordCollection =
                     StreamSupport.stream(consumerRecords.spliterator(), true)
                         .collect(Collectors.toList());
-                
+
                 // To start the execution
                 CompletableFuture<Void> startEvent = new CompletableFuture<>();
 
@@ -84,7 +84,7 @@ public class Consumer1 {
                                 });
                         })
                         .collect(Collectors.toList());
-                    
+
                     return CompletableFuture.allOf((CompletableFuture<?>[]) taskFutures.toArray());
                 }).thenRun(() -> {
                     consumer.commitAsync((offsets, exception) -> {

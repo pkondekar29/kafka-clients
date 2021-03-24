@@ -9,17 +9,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.prometheus.kafka.consumer.utils.Recorder;
 import com.prometheus.kafka.model.User;
 import com.prometheus.processor.impl.AbstractConsumerRecordProcessor;
-import com.prometheus.processor.impl.StringConsumerRecordProcessor;
 import com.prometheus.processor.impl.UserConsumerRecordProcessor;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -46,7 +42,7 @@ public class Consumer2 {
         KafkaConsumer<String, User> consumer = new KafkaConsumer<>(props);
 
         // Here we are subscibing to the topic
-        consumer.subscribe(Collections.singletonList("user"));
+        consumer.subscribe(Collections.singletonList("users"));
         try {
             Recorder recorder = Recorder.getInstance();
             AtomicInteger i = new AtomicInteger(0);
@@ -69,11 +65,11 @@ public class Consumer2 {
                 });
 
                 consumer.commitAsync((offsets, exception) -> {
-                    if (offsets.size() > 0) {
-                        LOG.info(String.format("Commited Offsets: %s",
-                                offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
-                                        .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
-                    }
+                    // if (offsets.size() > 0) {
+                    //     LOG.info(String.format("Commited Offsets: %s",
+                    //             offsets.entrySet().stream().map(Entry::getValue).map(OffsetAndMetadata::offset)
+                    //                     .map(offset -> Long.toString(offset)).collect(Collectors.joining(", "))));
+                    // }
                 });
             }
         } catch (Exception e) {

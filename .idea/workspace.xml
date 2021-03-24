@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ebef3cd9-e1fd-4e9f-9dd3-ad3449473eea" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer1.java" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer2.java" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer3.java" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/group/Consumer3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/subscribed/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/java/com/prometheus/kafka/consumer/subscribed/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/resources/consumer-2.properties" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/resources/consumer-2.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/src/main/resources/consumer-3.properties" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/src/main/resources/consumer-3.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/producer/src/main/java/com/prometheus/kafka/Producer.java" beforeDir="false" afterPath="$PROJECT_DIR$/producer/src/main/java/com/prometheus/kafka/Producer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/producer/src/main/resources/producer-1.properties" beforeDir="false" afterPath="$PROJECT_DIR$/producer/src/main/resources/producer-1.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="C:\SAPDevelop\tools\IntelliJ\IntelliJ IDEA Community Edition 2020.2.3\plugins\maven\lib\maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1qCqdHilcKX5osn78y0k20TJ7ql" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/producer" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ebef3cd9-e1fd-4e9f-9dd3-ad3449473eea" name="Default Changelist" comment="" />
+      <created>1616594004840</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616594004840</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2660" y="275" key="FileChooserDialogImpl" timestamp="1616594100357">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2660" y="275" key="FileChooserDialogImpl/0.0.1280.680/1920.0.1920.1040@1920.0.1920.1040" timestamp="1616594100357" />
+  </component>
+</project>
